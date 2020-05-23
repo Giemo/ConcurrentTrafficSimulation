@@ -61,12 +61,12 @@ void TrafficLight::cycleThroughPhases()
     // Set cycle duration to random number between 4 and 6
     std::random_device rd;
     std::mt19937 mt(rd());
-    std::uniform_int_distribution<int> dist(4, 6);
+    std::uniform_int_distribution<int> dist(4000, 6000);
     cylce_duration = dist(mt); 
 
     while(true)
     {
-        time_between_loops = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - previous_update).count();
+        time_between_loops = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - previous_update).count();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
@@ -76,10 +76,10 @@ void TrafficLight::cycleThroughPhases()
             _currentPhase = _currentPhase == TrafficLightPhase::red ? TrafficLightPhase::green : TrafficLightPhase::red;     
 
             // Send message
-            auto msg = _currentPhase;
             _message_queue.send(std::move(_currentPhase));
 
-            previous_update = std::chrono::system_clock::now();               
+            previous_update = std::chrono::system_clock::now();       
+            cylce_duration = dist(mt);         
         }
     }
 }
